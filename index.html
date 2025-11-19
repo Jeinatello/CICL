@@ -106,8 +106,8 @@ let scenes = {
     start: {
         name: "Narrator",
         text: "A Child in Conflict with the Law (CICL) has reportedly committed an offense. You will now simulate the RA 9344 & 10630 process.",
-        bg: "images/bg_title.jpg",
-        char: [],
+        bg: "images/bg_community.png",
+        char: ["images/narrator.png"],
         choices: [
             { text: "Begin Simulation", next: "leoContact" }
         ]
@@ -117,7 +117,7 @@ let scenes = {
     leoContact: {
         name: "LEO",
         text: "I approached the child calmly. I must avoid intimidation and introduce myself as Ate/Kuya.",
-        bg: "images/bg_street.jpg",
+        bg: "images/bg_street.png",
         char: ["images/leo.png"],
         choices: [
             { text: "Perform LEO Duties", next: "leoDuties" }
@@ -127,7 +127,7 @@ let scenes = {
     leoDuties: {
         name: "LEO",
         text: "As a Law Enforcement Officer, I must: (1) Determine age; (2) Inform parents/guardian; (3) Bring the child for medico-legal; (4) Turn over to WCPD within 8 hours.",
-        bg: "images/bg_police.jpg",
+        bg: "images/bg_police.png",
         char: ["images/leo.png"],
         choices: [
             { text: "Proceed to WCPD", next: "wcpd" }
@@ -138,7 +138,7 @@ let scenes = {
     wcpd: {
         name: "Social Worker",
         text: "I am assisting the case at WCPD. We will categorize the child based on age and discernment.",
-        bg: "images/bg_wcpd.jpg",
+        bg: "images/bg_wcpd.png",
         char: ["images/social_worker.png"],
         choices: [
             { text: "Determine Age", next: "ageSelect" }
@@ -148,7 +148,7 @@ let scenes = {
     ageSelect: {
         name: "Social Worker",
         text: "Select the child's age category:",
-        bg: "images/bg_desk.jpg",
+        bg: "images/bg_dswd.png",
         char: ["images/social_worker.png"],
         choices: [
             { text: "15 and below", next: "age15below" },
@@ -160,7 +160,7 @@ let scenes = {
     age15below: {
         name: "Social Worker",
         text: "The child is 15 or below. Under RA 9344, the child is totally exempt.",
-        bg: "images/bg_dswd.jpg",
+        bg: "images/bg_dswd.png",
         char: ["images/social_worker.png"],
         choices: [
             { text: "Turn over to parents/guardian", next: "turnoverParents15below" },
@@ -171,7 +171,7 @@ let scenes = {
     turnoverParents15below: {
         name: "Parents",
         text: "The parents will take responsibility for the child.",
-        bg: "images/bg_house.jpg",
+        bg: "images/bg_house.png",
         char: ["images/mother.png","images/father.png"],
         choices: [
             { text: "Refer to Intervention Program", next: "interventionEnd" },
@@ -182,7 +182,7 @@ let scenes = {
     interventionEnd: {
         name: "Narrator",
         text: "The child is placed in an intervention program and has been reintegrated into the community. (END)",
-        bg: "images/bg_community.jpg",
+        bg: "images/bg_community.png",
         char: [],
         choices: []
     },
@@ -191,7 +191,7 @@ let scenes = {
     age15to18: {
         name: "Social Worker",
         text: "The child is between 15 and below 18. Now determine DISCERNMENT:",
-        bg: "images/bg_wcpd.jpg",
+        bg: "images/bg_wcpd.png",
         char: ["images/social_worker.png"],
         choices: [
             { text: "Without discernment", next: "noDiscernment" },
@@ -203,7 +203,7 @@ let scenes = {
     noDiscernment: {
         name: "Social Worker",
         text: "The child acted WITHOUT discernment. Legal outcome: Intervention Program.",
-        bg: "images/bg_dswd.jpg",
+        bg: "images/bg_dswd.png",
         char: ["images/social_worker.png"],
         choices: [
             { text: "Turn over to parents", next: "interventionEnd" },
@@ -214,7 +214,7 @@ let scenes = {
     withDiscernment: {
         name: "Social Worker",
         text: "The child acted WITH discernment. Determine the nature of the offense:",
-        bg: "images/bg_dswd.jpg",
+        bg: "images/bg_dswd.png",
         char: ["images/social_worker.png"],
         choices: [
             { text: "Non-serious offense", next: "nonSerious" },
@@ -226,7 +226,7 @@ let scenes = {
     nonSerious: {
         name: "Social Worker",
         text: "Non-serious offense. The child qualifies for DIVERSION unless disqualified.",
-        bg: "images/bg_community.jpg",
+        bg: "images/bg_community.png",
         char: ["images/social_worker.png"],
         choices: [
             { text: "Proceed with Diversion", next: "diversionEnd" },
@@ -238,14 +238,14 @@ let scenes = {
     diversionEnd: {
         name: "Narrator",
         text: "A diversion conference is conducted and the child complies with the diversion program. (END)",
-        bg: "images/bg_community.jpg",
+        bg: "images/bg_community.png",
         char: []
     },
 
     seriousSelectAge: {
         name: "Social Worker",
         text: "Determine the child’s age for serious crime procedures:",
-        bg: "images/bg_wcpd.jpg",
+        bg: "images/bg_wcpd.png",
         char: ["images/social_worker.png"],
         choices: [
             { text: "Age 12 to 15, serious crime", next: "serious12to15" },
@@ -257,7 +257,7 @@ let scenes = {
     serious12to15: {
         name: "Social Worker",
         text: "For ages 12 to 15 with a serious offense: Bahay Pag-asa → IJISC/IIP → If repetition, Intervention.",
-        bg: "images/bg_bpa.jpg",
+        bg: "images/bg_dswd.png",
         char: ["images/social_worker.png"],
         choices: [
             { text: "Proceed to Bahay Pag-asa", next: "bpaEnd" },
@@ -268,14 +268,14 @@ let scenes = {
     bpaEnd: {
         name: "Narrator",
         text: "The child is placed in Bahay Pag-asa, undergoes IJISC/IIP, and is turned over to parents after intervention. (END)",
-        bg: "images/bg_bpa.jpg",
+        bg: "images/bg_dswd.png",
         char: []
     },
 
     serious15to18: {
         name: "Social Worker",
         text: "For ages 15 to 18 with a serious offense with a penalty above 6 years: Proceed to Prosecution as disqualified from diversion.",
-        bg: "images/bg_bpa.jpg",
+        bg: "images/bg_dswd.png",
         char: ["images/social_worker.png"],
         choices: [
             { text: "Proceed to Prosecution", next: "prosecutionStart" },
@@ -286,7 +286,7 @@ let scenes = {
     prosecutionStart: {
         name: "Prosecutor",
         text: "Preliminary Investigation begins.",
-        bg: "images/bg_prosecutor.jpg", // placeholder
+        bg: "images/bg_prosecutor.png", // placeholder
         char: ["images/prosecutor.png"],
         choices: [
             { text: "Determine Probable Cause", next: "probableCause" },
@@ -297,7 +297,7 @@ let scenes = {
     probableCause: {
         name: "Prosecutor",
         text: "Probable Cause is established. Filing Information to the Court.",
-        bg: "images/bg_prosecutor.jpg",
+        bg: "images/bg_prosecutor.png",
         char: ["images/prosecutor.png"],
         choices: [
             { text: "Proceed to Court", next: "court" },
@@ -308,7 +308,7 @@ let scenes = {
     court: {
         name: "Judge",
         text: "The Family Court hears the case with child-sensitive procedures.",
-        bg: "images/bg_court.jpg", // placeholder
+        bg: "images/bg_court.png", // placeholder
         char: ["images/judge.png"],
         choices: [
             { text: "Child is NOT GUILTY", next: "notGuilty" },
@@ -320,14 +320,14 @@ let scenes = {
     notGuilty: {
         name: "Narrator",
         text: "Case dismissed. The child is reintegrated into society. (END)",
-        bg: "images/bg_community.jpg",
+        bg: "images/bg_community.png",
         char: []
     },
 
     guilty: {
         name: "Judge",
         text: "The child is found GUILTY. Sentence is automatically suspended. Child is committed to a Youth Rehabilitation Center.",
-        bg: "images/bg_yrc.jpg",
+        bg: "images/bg_court.png",
         char: ["images/judge.png"],
         choices: [
             { text: "Assess Degree of Change", next: "degreeCheck" },
@@ -338,7 +338,7 @@ let scenes = {
     degreeCheck: {
         name: "Social Worker",
         text: "We must evaluate if the child demonstrates a degree of change:",
-        bg: "images/bg_yrc.jpg",
+        bg: "images/bg_yrc.png",
         char: ["images/social_worker.png"],
         choices: [
             { text: "Degree of change achieved", next: "fulfilled" },
@@ -350,14 +350,14 @@ let scenes = {
     fulfilled: {
         name: "Judge",
         text: "Degree of change achieved. The case is dismissed. The child returns to society. (END)",
-        bg: "images/bg_community.jpg",
+        bg: "images/bg_court.png",
         char: ["images/judge.png"]
     },
 
     notFulfilled: {
         name: "Judge",
         text: "Degree of change not achieved. Options:",
-        bg: "images/bg_court.jpg",
+        bg: "images/bg_court.png",
         char: ["images/judge.png"],
         choices: [
             { text: "Probation", next: "probationEnd" },
@@ -369,14 +369,14 @@ let scenes = {
     probationEnd: {
         name: "Narrator",
         text: "The child is placed on probation with monitoring. (END)",
-        bg: "images/bg_community.jpg",
+        bg: "images/bg_community.png",
         char: []
     },
 
     continueYRC: {
         name: "Narrator",
         text: "The child continues the YRC program until re-evaluated by the court. (END)",
-        bg: "images/bg_yrc.jpg",
+        bg: "images/bg_yrc.png",
         char: []
     }
 
