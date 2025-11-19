@@ -28,6 +28,88 @@
         box-shadow: 0 0 25px #000;
     }
 
+    /* -----------------------
+       TITLE SCREEN
+    ------------------------- */
+    #title-screen {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(0,0,0,0.85), rgba(0,0,0,0.75));
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        z-index: 20;
+        opacity: 1;
+        transition: opacity 0.8s ease;
+    }
+
+    #title-screen.hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    #title-title {
+        font-size: 36px;
+        font-weight: bold;
+        text-shadow: 0 0 10px #000;
+        margin-bottom: 20px;
+    }
+
+    #title-sub {
+        font-size: 20px;
+        opacity: 0.85;
+        margin-bottom: 40px;
+    }
+
+    #start-button {
+        background: #66c2ff;
+        color: #000;
+        padding: 12px 30px;
+        font-size: 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        box-shadow: 0 0 12px #66c2ff;
+        transition: 0.3s;
+    }
+
+    #start-button:hover {
+        background: #a7e0ff;
+        transform: translateY(-3px);
+        box-shadow: 0 0 20px #a7e0ff;
+    }
+
+    /* --- TITLE SCREEN LOGOS --- */
+    #logo-container {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        display: flex;
+        gap: 15px;
+    }
+
+    .logo-placeholder {
+        width: 80px;
+        height: 80px;
+        background: rgba(255,255,255,0.12);
+        border: 2px dashed rgba(255,255,255,0.32);
+        border-radius: 10px;
+    }
+
+    /* --- CHILD CHARACTER RIGHT SIDE --- */
+    #child-placeholder {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        width: 140px;
+        height: 180px;
+        background: rgba(255,255,255,0.12);
+        border: 2px dashed rgba(255,255,255,0.32);
+        border-radius: 10px;
+    }
+
     /* --- Characters --- */
     .character-img {
         position: absolute;
@@ -77,7 +159,6 @@
         line-height: 1.45;
     }
 
-    /* --- Choices --- */
     .choice {
         background: rgba(255,255,255,0.12);
         padding: 10px;
@@ -93,7 +174,6 @@
         transform: translateX(4px);
     }
 
-    /* --- Extra Buttons --- */
     #extra-buttons { margin-top: 10px; }
 
     .extra-btn {
@@ -117,6 +197,27 @@
 <body>
 
 <div id="game-container">
+
+    <!-- ==============================
+         TITLE SCREEN INTERFACE
+    ================================ -->
+    <div id="title-screen">
+        <div id="title-title">Process of Handling a CICL</div>
+        <div id="title-sub">A Guided Simulation of RA 9344 & 10630 Procedures</div>
+
+        <div id="start-button" onclick="startGame()">START</div>
+
+        <!-- Logo placeholders -->
+        <div id="logo-container">
+            <div class="logo-placeholder"></div>
+            <div class="logo-placeholder"></div>
+        </div>
+
+        <!-- Child character placeholder -->
+        <div id="child-placeholder"></div>
+    </div>
+
+    <!-- Game Area -->
     <div id="characters-container"></div>
     <div id="dialogue-box">
         <div id="name"></div>
@@ -129,7 +230,7 @@
 <script>
 
 /* ==========================================================
-   SCENE DATA (Paths corrected to match GitHub filenames)
+   FULL SCENES (unchanged from last version)
    ========================================================== */
 
 let previousScene = null;
@@ -403,27 +504,21 @@ let scenes = {
     }
 };
 
+
 /* ==========================================================
-   RENDER ENGINE WITH SMOOTH ANIMATIONS
+   RENDER ENGINE
    ========================================================== */
 
 function show(scene) {
     let s = scenes[scene];
 
-    // --------------------------------------------
-    // Fade-out dialogue box before updating content
-    // --------------------------------------------
     let dialog = document.getElementById("dialogue-box");
     dialog.classList.remove("visible");
 
     setTimeout(() => {
-        // Update dialogue content
         document.getElementById("name").innerText = s.name;
         document.getElementById("text").innerText = s.text;
 
-        // -----------------------
-        // Choices
-        // -----------------------
         let choicesDiv = document.getElementById("choices");
         choicesDiv.innerHTML = "";
         if (s.choices) {
@@ -439,9 +534,6 @@ function show(scene) {
             });
         }
 
-        // -----------------------
-        // Extra buttons (Back)
-        // -----------------------
         let extra = document.getElementById("extra-buttons");
         extra.innerHTML = "";
         if (previousScene && previousScene !== scene) {
@@ -452,19 +544,12 @@ function show(scene) {
             extra.appendChild(backBtn);
         }
 
-        // Fade-in dialogue box
         dialog.classList.add("visible");
 
     }, 300);
 
-    // --------------------------------------------
-    // Background transition
-    // --------------------------------------------
     document.getElementById("game-container").style.backgroundImage = `url(${s.bg})`;
 
-    // --------------------------------------------
-    // Character loading + fade animation
-    // --------------------------------------------
     let chars = document.getElementById("characters-container");
     chars.innerHTML = "";
 
@@ -480,9 +565,20 @@ function show(scene) {
     }
 }
 
-// Start game
-show("start");
+
+/* ==========================================================
+   TITLE SCREEN → START GAME
+   ========================================================== */
+
+function startGame() {
+    let title = document.getElementById("title-screen");
+    title.classList.add("hidden");
+    setTimeout(() => {
+        show("start");
+    }, 900);
+}
 
 </script>
+
 </body>
 </html>
