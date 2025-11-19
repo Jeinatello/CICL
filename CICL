@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CICL Simulation – RA 9344 & 10630</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #000;
+        color: #fff;
+    }
+
+    #game-container {
+        width: 900px;
+        height: 600px;
+        margin: 30px auto;
+        border-radius: 10px;
+        overflow: hidden;
+        background-size: cover;
+        background-position: center;
+        border: 2px solid #555;
+        position: relative;
+        transition: background 1s ease;
+    }
+
+    .character-img {
+        position: absolute;
+        bottom: 0;
+        height: 75%;
+        transition: opacity 1s ease;
+    }
+
+    #dialogue-box {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background: rgba(0,0,0,0.7);
+        padding: 20px;
+        box-sizing: border-box;
+        transition: opacity 0.5s ease;
+    }
+
+    #name { font-size: 20px; font-weight: bold; margin-bottom: 6px; }
+    #text { font-size: 18px; margin-bottom: 10px; }
+
+    #choices { margin-top: 14px; }
+
+    .choice {
+        background: rgba(255,255,255,0.18);
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .choice:hover {
+        background: rgba(255,255,255,0.35);
+    }
+
+    #extra-buttons {
+        margin-top: 8px;
+    }
+
+    .extra-btn {
+        background: rgba(255,255,255,0.1);
+        color: #fff;
+        padding: 6px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 5px;
+        display: inline-block;
+        font-size: 14px;
+    }
+
+    .extra-btn:hover {
+        background: rgba(255,255,255,0.3);
+    }
+
+</style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="characters-container"></div>
+    <div id="dialogue-box">
+        <div id="name"></div>
+        <div id="text"></div>
+        <div id="choices"></div>
+        <div id="extra-buttons"></div>
+    </div>
+</div>
+
+<script>
+
+// ==========================================================
+//  SCENES — IMPLEMENTATION WITH PLACEHOLDERS & MULTI-CHAR
+// ==========================================================
+
+let previousScene = null; // for Back button
+let scenes = {
+
+    // ---------- START ----------
+    start: {
+        name: "Narrator",
+        text: "A Child in Conflict with the Law (CICL) has reportedly committed an offense. You will now simulate the RA 9344 & 10630 process.",
+        bg: "images/bg_title.jpg",
+        char: [],
+        choices: [
+            { text: "Begin Simulation", next: "leoContact" }
+        ]
+    },
+
+    // ---------- LEO ----------
+    leoContact: {
+        name: "LEO",
+        text: "I approached the child calmly. I must avoid intimidation and introduce myself as Ate/Kuya.",
+        bg: "images/bg_street.jpg",
+        char: ["images/leo.png"],
+        choices: [
+            { text: "Perform LEO Duties", next: "leoDuties" }
+        ]
+    },
+
+    leoDuties: {
+        name: "LEO",
+        text: "As a Law Enforcement Officer, I must: (1) Determine age; (2) Inform parents/guardian; (3) Bring the child for medico-legal; (4) Turn over to WCPD within 8 hours.",
+        bg: "images/bg_police.jpg",
+        char: ["images/leo.png"],
+        choices: [
+            { text: "Proceed to WCPD", next: "wcpd" }
+        ]
+    },
+
+    // ---------- WCPD & Social Worker ----------
+    wcpd: {
+        name: "Social Worker",
+        text: "I am assisting the case at WCPD. We will categorize the child based on age and discernment.",
+        bg: "images/bg_wcpd.jpg",
+        char: ["images/social_worker.png"],
+        choices: [
+            { text: "Determine Age", next: "ageSelect" }
+        ]
+    },
+
+    ageSelect: {
+        name: "Social Worker",
+        text: "Select the child's age category:",
+        bg: "images/bg_desk.jpg",
+        char: ["images/social_worker.png"],
+        choices: [
+            { text: "15 and below", next: "age15below" },
+            { text: "15 to below 18", next: "age15to18" }
+        ]
+    },
+
+    // ---------- AGE 15 BELOW ----------
+    age15below: {
+        name: "Social Worker",
+        text: "The child is 15 or below. Under RA 9344, the child is totally exempt.",
+        bg: "images/bg_dswd.jpg",
+        char: ["images/social_worker.png"],
+        choices: [
+            { text: "Turn over to parents/guardian", next: "turnoverParents15below" },
+            { text: "Return to age selection", next: "ageSelect" }
+        ]
+    },
+
+    turnoverParents15below: {
+        name: "Parents",
+        text: "The parents will take responsibility for the child.",
+        bg: "images/bg_house.jpg",
+        char: ["images/mother.png","images/father.png"],
+        choices: [
+            { text: "Refer to Intervention Program", next: "interventionEnd" },
+            { text: "Back", next: "age15below" }
+        ]
+    },
+
+    interventionEnd: {
+        name: "Narrator",
+        text: "The child is placed in an intervention program and has been reintegrated into the community. (END)",
+        bg: "images/bg_community.jpg",
+        char: [],
+        choices: []
+    },
+
+    // ---------- AGE 15-18 DISCERNMENT ----------
+    age15to18: {
+        name: "Social Worker",
+        text: "The child is between 15 and below 18. Now determine DISCERNMENT:",
+        bg: "images/bg_wcpd.jpg",
+        char: ["images/social_worker.png"],
+        choices: [
+            { text: "Without discernment", next: "noDiscernment" },
+            { text: "With discernment", next: "withDiscernment" },
+            { text: "Return to age selection", next: "ageSelect" }
+        ]
+    },
+
+    noDiscernment: {
+        name: "Social Worker",
+        text: "The child acted WITHOUT discernment. Legal outcome: Intervention Program.",
+        bg: "images/bg_dswd.jpg",
+        char: ["images/social_worker.png"],
+        choices: [
+            { text: "Turn over to parents", next: "interventionEnd" },
+            { text: "Back", next: "age15to18" }
+        ]
+    },
+
+    withDiscernment: {
+        name: "Social Worker",
+        text: "The child acted WITH discernment. Determine the nature of the offense:",
+        bg: "images/bg_dswd.jpg",
+        char: ["images/social_worker.png"],
+        choices: [
+            { text: "Non-serious offense", next: "nonSerious" },
+            { text: "Serious offense", next: "seriousSelectAge" },
+            { text: "Back", next: "age15to18" }
+        ]
+    },
+
+    nonSerious: {
+        name: "Social Worker",
+        text: "Non-serious offense. The child qualifies for DIVERSION unless disqualified.",
+        bg: "images/bg_community.jpg",
+        char: ["images/social_worker.png"],
+        choices: [
+            { text: "Proceed with Diversion", next: "diversionEnd" },
+            { text: "Child is disqualified → Proceed to Court", next: "prosecutionStart" },
+            { text: "Back", next: "withDiscernment" }
+        ]
+    },
+
+    diversionEnd: {
+        name: "Narrator",
+        text: "A diversion conference is conducted and the child complies with the diversion program. (END)",
+        bg: "images/bg_community.jpg",
+        char: []
+    },
+
+    seriousSelectAge: {
+        name: "Social Worker",
+        text: "Determine the child’s age for serious crime procedures:",
+        bg: "images/bg_wcpd.jpg",
+        char: ["images/social_worker.png"],
+        choices: [
+            { text: "Age 12 to 15, serious crime", next: "serious12to15" },
+            { text: "Age 15 to 18, serious crime", next: "serious15to18" },
+            { text: "Back", next: "withDiscernment" }
+        ]
+    },
+
+    serious12to15: {
+        name: "Social Worker",
+        text: "For ages 12 to 15 with a serious offense: Bahay Pag-asa → IJISC/IIP → If repetition, Intervention.",
+        bg: "images/bg_bpa.jpg",
+        char: ["images/social_worker.png"],
+        choices: [
+            { text: "Proceed to Bahay Pag-asa", next: "bpaEnd" },
+            { text: "Back", next: "seriousSelectAge" }
+        ]
+    },
+
+    bpaEnd: {
+        name: "Narrator",
+        text: "The child is placed in Bahay Pag-asa, undergoes IJISC/IIP, and is turned over to parents after intervention. (END)",
+        bg: "images/bg_bpa.jpg",
+        char: []
+    },
+
+    serious15to18: {
+        name: "Social Worker",
+        text: "For ages 15 to 18 with a serious offense with a penalty above 6 years: Proceed to Prosecution as disqualified from diversion.",
+        bg: "images/bg_bpa.jpg",
+        char: ["images/social_worker.png"],
+        choices: [
+            { text: "Proceed to Prosecution", next: "prosecutionStart" },
+            { text: "Back", next: "seriousSelectAge" }
+        ]
+    },
+
+    prosecutionStart: {
+        name: "Prosecutor",
+        text: "Preliminary Investigation begins.",
+        bg: "images/bg_prosecutor.jpg", // placeholder
+        char: ["images/prosecutor.png"],
+        choices: [
+            { text: "Determine Probable Cause", next: "probableCause" },
+            { text: "Back", next: "serious15to18" }
+        ]
+    },
+
+    probableCause: {
+        name: "Prosecutor",
+        text: "Probable Cause is established. Filing Information to the Court.",
+        bg: "images/bg_prosecutor.jpg",
+        char: ["images/prosecutor.png"],
+        choices: [
+            { text: "Proceed to Court", next: "court" },
+            { text: "Back", next: "prosecutionStart" }
+        ]
+    },
+
+    court: {
+        name: "Judge",
+        text: "The Family Court hears the case with child-sensitive procedures.",
+        bg: "images/bg_court.jpg", // placeholder
+        char: ["images/judge.png"],
+        choices: [
+            { text: "Child is NOT GUILTY", next: "notGuilty" },
+            { text: "Child is GUILTY", next: "guilty" },
+            { text: "Back", next: "probableCause" }
+        ]
+    },
+
+    notGuilty: {
+        name: "Narrator",
+        text: "Case dismissed. The child is reintegrated into society. (END)",
+        bg: "images/bg_community.jpg",
+        char: []
+    },
+
+    guilty: {
+        name: "Judge",
+        text: "The child is found GUILTY. Sentence is automatically suspended. Child is committed to a Youth Rehabilitation Center.",
+        bg: "images/bg_yrc.jpg",
+        char: ["images/judge.png"],
+        choices: [
+            { text: "Assess Degree of Change", next: "degreeCheck" },
+            { text: "Back", next: "court" }
+        ]
+    },
+
+    degreeCheck: {
+        name: "Social Worker",
+        text: "We must evaluate if the child demonstrates a degree of change:",
+        bg: "images/bg_yrc.jpg",
+        char: ["images/social_worker.png"],
+        choices: [
+            { text: "Degree of change achieved", next: "fulfilled" },
+            { text: "Degree of change NOT achieved", next: "notFulfilled" },
+            { text: "Back", next: "guilty" }
+        ]
+    },
+
+    fulfilled: {
+        name: "Judge",
+        text: "Degree of change achieved. The case is dismissed. The child returns to society. (END)",
+        bg: "images/bg_community.jpg",
+        char: ["images/judge.png"]
+    },
+
+    notFulfilled: {
+        name: "Judge",
+        text: "Degree of change not achieved. Options:",
+        bg: "images/bg_court.jpg",
+        char: ["images/judge.png"],
+        choices: [
+            { text: "Probation", next: "probationEnd" },
+            { text: "Continue Youth Rehab Center Program", next: "continueYRC" },
+            { text: "Back", next: "degreeCheck" }
+        ]
+    },
+
+    probationEnd: {
+        name: "Narrator",
+        text: "The child is placed on probation with monitoring. (END)",
+        bg: "images/bg_community.jpg",
+        char: []
+    },
+
+    continueYRC: {
+        name: "Narrator",
+        text: "The child continues the YRC program until re-evaluated by the court. (END)",
+        bg: "images/bg_yrc.jpg",
+        char: []
+    }
+
+};
+
+// ==========================================================
+//  RENDER ENGINE WITH MULTIPLE CHARACTERS + TRANSITIONS
+// ==========================================================
+
+function show(scene) {
+    previousScene = previousScene === scene ? previousScene : scene; // store previous for back
+    let s = scenes[scene];
+
+    // Dialogue
+    let nameBox = document.getElementById("name");
+    let textBox = document.getElementById("text");
+    let choicesDiv = document.getElementById("choices");
+    let extraDiv = document.getElementById("extra-buttons");
+
+    // Fade out old
+    document.getElementById("dialogue-box").style.opacity = 0;
+    setTimeout(() => {
+        nameBox.innerText = s.name;
+        textBox.innerText = s.text;
+        choicesDiv.innerHTML = "";
+
+        // Choices buttons
+        if(s.choices) s.choices.forEach(choice => {
+            let btn = document.createElement("div");
+            btn.className = "choice";
+            btn.innerText = choice.text;
+            btn.onclick = () => show(choice.next);
+            choicesDiv.appendChild(btn);
+        });
+
+        // Extra buttons: Back
+        extraDiv.innerHTML = "";
+        if(previousScene && previousScene !== scene) {
+            let backBtn = document.createElement("div");
+            backBtn.className = "extra-btn";
+            backBtn.innerText = "Back";
+            backBtn.onclick = () => show(previousScene);
+            extraDiv.appendChild(backBtn);
+        }
+
+        document.getElementById("dialogue-box").style.opacity = 1;
+    }, 300);
+
+    // Background
+    document.getElementById("game-container").style.backgroundImage = `url(${s.bg})`;
+
+    // Characters
+    let charsContainer = document.getElementById("characters-container");
+    charsContainer.innerHTML = "";
+    if(s.char){
+        s.char.forEach((imgSrc, i) => {
+            let img = document.createElement("img");
+            img.src = imgSrc;
+            img.className = "character-img";
+            img.style.left = `${20 + i*200}px`; // spacing for multiple characters
+            img.style.opacity = 0;
+            charsContainer.appendChild(img);
+            setTimeout(()=>{ img.style.opacity = 1; }, 100); // fade-in
+        });
+    }
+}
+
+show("start");
+
+</script>
+</body>
+</html>
